@@ -1,8 +1,23 @@
 [
     {
         "id": 1,
-        "description": "Buy new dress",
-        "createdAt": "2026-09-21T21:58:18.869737",
-        "updatedAt": "2026-09-21T22:03:25.808026"
+        "description": "Buy groceries",
+        "status": "done",
+        "createdAt": "2026-10-04T12:11:59.475631",
+        "updatedAt": "2026-10-04T12:11:59.663229"
+    },
+    {
+        "id": 2,
+        "description": "Do Python homework",
+        "status": "in-progress",
+        "createdAt": "2026-10-04T12:11:59.503519",
+        "updatedAt": "2026-10-04T12:11:59.613327"
+    },
+    {
+        "id": 3,
+        "description": "Final test",
+        "status": "todo",
+        "createdAt": "2026-10-04T12:12:18.974155",
+        "updatedAt": "2026-10-04T12:12:18.974155"
     }
 ]

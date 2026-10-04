@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python3 /Users/subbu/Desktop/python-fastapi-learning/py/task-cli/main.py "$@"
