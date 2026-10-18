@@ -1,25 +1,18 @@
 # Python & FastAPI Learning
 
-A collection of Python and FastAPI learning projects.
+A collection of projects built while learning Python, FastAPI, and backend development.
 
 ## Projects
 
-### Task Tracker CLI
+### 1. Task Tracker CLI
 
-A simple command-line task tracker built with Python. Tasks are stored locally in a JSON file.
+A simple command-line task manager built with Python that stores tasks locally in a JSON file.
 
-Features:
+**Project:** [roadmap.sh/task-tracker](https://roadmap.sh/projects/task-tracker)  
+**Source Code:** [py/task-cli](https://github.com/subbuwu/python-and-fastapi-learning/tree/main/py/task-cli)
 
-- Add, update, and delete tasks
-- Mark tasks as `todo`, `in-progress`, or `done`
-- List all tasks
-- Filter tasks by status
-- Store tasks in `data.json`
+### 2. GitHub Activity CLI
 
-### Project URL
+A Python command-line tool that fetches recent GitHub activity using the GitHub API and summarizes events such as pushes, stars, issues, and pull requests.
 
-https://roadmap.sh/projects/task-tracker
-
-### Source Code
-
-https://github.com/subbuwu/python-and-fastapi-learning/tree/main/py/task-cli
+**Source Code:** [github-events-api](https://github.com/subbuwu/python-and-fastapi-learning/tree/main/py/github-events-api)
