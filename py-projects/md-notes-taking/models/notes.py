@@ -10,3 +10,5 @@ class MarkdownNote(BaseModel):
 class MarkdownNoteUpdate(BaseModel):
     title: str | None = Field(default=None, min_length=1, max_length=200)
     content: str | None = None
+class GrammarCheckRequest(BaseModel):
+    text: str = Field(min_length=1, max_length=20000)

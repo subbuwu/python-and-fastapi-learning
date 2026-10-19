@@ -2,9 +2,11 @@ from contextlib import asynccontextmanager
 from uuid import uuid4
 from pathlib import Path
 from fastapi import FastAPI,UploadFile, File, HTTPException
+from fastapi.responses import HTMLResponse
 from db import get_connection, initialize_database
-from models.notes import MarkdownNote, MarkdownNoteUpdate
-
+from models.notes import MarkdownNote, GrammarCheckRequest
+import markdown
+import httpx
 
 
 @asynccontextmanager
@@ -49,14 +51,14 @@ def get_notes():
     
     return [dict(row) for row in rows]
 
-@app.get("/notes{note_id}")
+@app.get("/notes/{note_id}")
 def get_notes_by_id(note_id : str):
     with get_connection() as conn:
         row = conn.execute(
         """
         SELECT * from notes where id = ?
         """
-        ,(note_id),
+        ,(note_id,)
         ).fetchone()
     
     if row is None:
@@ -111,3 +113,78 @@ async def upload_markdown_note(file: UploadFile = File(...)):
     
     finally:
         await file.close()
+
+@app.get("/notes/{note_id}/html", response_class=HTMLResponse)
+def render_notes_html(note_id : str):
+    with get_connection() as conn:
+        row = conn.execute(
+        """
+        SELECT * from notes WHERE id = ?
+        """,
+        (note_id,)
+        ).fetchone()
+        
+    if row is None:
+        raise HTTPException(
+            status_code=404,
+            detail="Note not found",
+    )
+        
+    row = dict(row)
+    html = markdown.markdown(
+        row["content"],
+        extensions=["fenced_code", "tables"]
+    )
+    return HTMLResponse(html)
+
+@app.post("/notes/check-grammar")
+async def check_grammar_notes(request: GrammarCheckRequest):
+    text = request.text.strip()
+
+    if not text:
+        raise HTTPException(
+            status_code=400,
+            detail="Text cannot be empty"
+        )
+
+    try:
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            response = await client.post(
+                "https://api.languagetool.org/v2/check",
+                data={
+                    "text": text,
+                    "language": "en-US"
+                }
+            )
+
+            response.raise_for_status()
+            result = response.json()
+
+    except httpx.HTTPError:
+        raise HTTPException(
+            status_code=502,
+            detail="Grammar checking service is unavailable"
+        )
+
+    issues = []
+
+    for match in result.get("matches", []):
+        offset = match["offset"]
+        length = match["length"]
+
+        issues.append({
+            "message": match["message"],
+            "incorrect_text": text[offset:offset + length],
+            "offset": offset,
+            "length": length,
+            "suggestions": [
+                replacement["value"]
+                for replacement in match.get("replacements", [])
+            ]
+        })
+
+    return {
+        "original_text": text,
+        "issue_count": len(issues),
+        "issues": issues
+    }
