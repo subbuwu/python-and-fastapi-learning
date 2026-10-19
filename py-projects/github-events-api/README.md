@@ -17,5 +17,5 @@ python main.py subbuwu
 
 ## Source
 
-[GitHub Repository](https://github.com/subbuwu/python-and-fastapi-learning/tree/main/py/github-events-api)
+[GitHub Repository](https://github.com/subbuwu/python-and-fastapi-learning/tree/main/py-projects/github-events-api)
 

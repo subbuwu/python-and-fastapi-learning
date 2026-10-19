@@ -27,4 +27,4 @@ task-cli list done
 
 ## Source
 
-[GitHub Repository](https://github.com/subbuwu/python-and-fastapi-learning/tree/main/py/task-cli)
+[GitHub Repository](https://github.com/subbuwu/python-and-fastapi-learning/tree/main/py-projects/task-cli)
