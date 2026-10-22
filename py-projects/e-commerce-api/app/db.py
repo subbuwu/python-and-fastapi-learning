@@ -1,29 +1,33 @@
+
 import os
+
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, sessionmaker
 
 load_dotenv()
+
 DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Base - Parent class for all models (maintains metadata)
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is not set. Check your .env file.")
+
+
+# Base class for all SQLAlchemy models
 class Base(DeclarativeBase):
-    """Base class for all sqlalchemy models."""
     pass
 
-    # engine manages connection pool to db
-    engine = create_engine(
-        DATABASE_URL,
-        echo=False,
-        future=True
-    )
-    
-    # session local is the factory that creates session objects
-    
-    SessionLocal = sessionmaker(
-        bind = engine,
-        autoflush=False,
-        autocommit=False,
-        future=True
-    )
 
+# Engine manages database connections and the connection pool
+engine = create_engine(
+    DATABASE_URL,
+    echo=False,
+)
+
+
+# SessionLocal creates database sessions
+SessionLocal = sessionmaker(
+    bind=engine,
+    autoflush=False,
+    autocommit=False,
+)
