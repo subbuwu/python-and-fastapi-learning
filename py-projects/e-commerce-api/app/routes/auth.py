@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.dependencies import get_db
 from app.models import User
-from app.schemas import UserCreate, UserResponse
-from app.security import hash_pw
+from app.schemas import UserCreate, UserResponse, UserLogin, TokenResponse
+from app.security import hash_pw, verify_pw, create_access_token
 
 
 router = APIRouter(
@@ -52,3 +52,35 @@ def register_user(user_data: UserCreate, db: DbSession):
         ) from None
 
     return new_user
+
+@router.post("/login", response_model=TokenResponse)
+def login_user(user_data: UserLogin, db: DbSession):
+    user = db.scalar(
+        select(User).where(User.email == str(user_data.email))
+    )
+
+    # Use the same error for unknown email and wrong password
+    if user is None or not verify_pw(
+        user_data.password, user.password_hash
+    ):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid email or password",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="This account is inactive",
+        )
+
+    if not user.is_email_verified:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Please verify your email before logging in",
+        )
+
+    token = create_access_token(user.id)
+
+    return TokenResponse(access_token=token)
